@@ -37,11 +37,9 @@ out/
 .vscode/
 
 # Ignore application.yml to prevent sensitive information from being pushed to Git
-/application.yml
-
+/src/main/resources/application.yml
 # Ignore .env file containing sensitive environment variables
 docker/.env
-
 # Ignore Dockerfile if it contains sensitive data or configurations
 docker/Dockerfile
 
