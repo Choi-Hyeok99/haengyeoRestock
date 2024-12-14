@@ -2,14 +2,15 @@ package com.sparta.haengyeorestock.domain.stock.product.entitiy;
 
 import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductNotificationHistory;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
+
 @NoArgsConstructor
 public class Product {
 

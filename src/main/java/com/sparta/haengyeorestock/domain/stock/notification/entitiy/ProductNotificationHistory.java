@@ -2,11 +2,11 @@ package com.sparta.haengyeorestock.domain.stock.notification.entitiy;
 
 import com.sparta.haengyeorestock.domain.stock.product.entitiy.Product;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor
 public class ProductNotificationHistory {
 
@@ -22,6 +22,5 @@ public class ProductNotificationHistory {
 
     private String status; // 발송 상태
     private Long lastSentUser; // 마지막으로 알람 전송 유저 ID
-
 
 }
