@@ -1,9 +1,6 @@
 package com.sparta.haengyeorestock.domain.stock.notification.entitiy;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,4 +19,9 @@ public class ProductUserNotificationHistory {
     private Long userId; // 유저 ID
     private int replenishmentCount; // 재입고 회차
     private LocalDateTime sentAt; // 알림 전송 시간
+
+    // ProductUserNotification과 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_notification_id")
+    private ProductUserNotification productUserNotification; // 유저 알림 설정 정보
 }

@@ -12,7 +12,7 @@ public class ProductNotificationHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long historyId;
+    private Long historyId; // 알림 히스토리 ID
 
     private int replenishmentCount; // 재입고 회차
 

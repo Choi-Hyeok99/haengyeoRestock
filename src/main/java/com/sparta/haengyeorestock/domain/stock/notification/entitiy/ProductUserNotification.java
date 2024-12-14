@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,4 +30,8 @@ public class ProductUserNotification {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
+    // ProductUserNotificationHistory와의 관계 설정
+    @OneToMany(mappedBy = "productUserNotification", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<ProductUserNotificationHistory> productUserNotificationHistoryList = new ArrayList<>();
 }

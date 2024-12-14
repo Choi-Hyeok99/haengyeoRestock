@@ -1,11 +1,12 @@
 package com.sparta.haengyeorestock.domain.stock.product.entitiy;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductNotificationHistory;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,5 +21,8 @@ public class Product {
     private int stock; // 재고 수량
     private boolean isOutOfStock; // 품절 여부 ( 재고가 0이면 품절 )
 
+    // ProductNotificationHistory 관계 매핑
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductNotificationHistory> productNotificationHistoryList = new ArrayList<>();
 
 }
