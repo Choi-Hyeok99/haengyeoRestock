@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: haengyeo_mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/main/resources/static/images:/app/static/images
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    networks:
+      - my_network
+
+  hanghae_restock:
+    build: ..
+    container_name: hanghae_restock
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://haengyeo_mysql:3306/restock_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+    networks:
+      - my_network
+
+volumes:
+  mysql_data:
+
+networks:
+  my_network:
+    driver: bridge
