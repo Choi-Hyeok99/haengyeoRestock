@@ -1,4 +1,4 @@
-package com.sparta.haengyeorestock.domain.stock.notification.repository;
+package com.sparta.haengyeorestock.domain.stock.notification.entitiy;
 
 
 import com.sparta.haengyeorestock.domain.stock.product.entitiy.Product;
