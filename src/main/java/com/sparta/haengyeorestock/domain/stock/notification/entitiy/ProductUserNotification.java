@@ -3,7 +3,7 @@ package com.sparta.haengyeorestock.domain.stock.notification.entitiy;
 
 import com.sparta.haengyeorestock.domain.stock.product.entitiy.Product;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor
 public class ProductUserNotification {
 

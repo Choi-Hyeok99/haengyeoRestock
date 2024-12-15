@@ -10,6 +10,7 @@ import com.sparta.haengyeorestock.domain.stock.product.repository.ProductReposit
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,49 +23,45 @@ public class NotificationService {
 
     // 자동 재입고 알림 전송
     public ProductUserNotificationResponseDTO sendRestockNotification(Long productId) {
-        // 상품 확인
         Product product = productRepository.findById(productId)
                                            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
 
-        // 재입고 회차 1 증가
         product.setReplenishmentCount(product.getReplenishmentCount() + 1);
         productRepository.save(product);
 
-        // 알림 설정한 유저 목록 가져오기
         List<ProductUserNotification> notifications = productUserNotificationRepository.findAllByProduct(product);
-
+        List<ProductUserNotificationResponseDTO.UserNotificationStatus> userStatuses = new ArrayList<>();
         int remainingStock = product.getStock();
 
-        // 일반 for문 사용
-        for (int i = 0; i < notifications.size(); i++) {
-            ProductUserNotification notification = notifications.get(i);
+        for (ProductUserNotification notification : notifications) {
+            ProductUserNotificationResponseDTO.UserNotificationStatus userStatus = new ProductUserNotificationResponseDTO.UserNotificationStatus();
+            userStatus.setUserId(notification.getUserId());
 
-            // 재고가 없으면 알림을 보내지 않음
             if (remainingStock <= 0) {
+                userStatus.setNotificationStatus("CANCELED_BY_SOLD_OUT");
                 saveNotificationHistory(product, notification.getUserId(), "CANCELED_BY_SOLD_OUT");
-                break; // 더 이상 알림을 보낼 필요가 없으므로 중단
+            } else if (notification.isActive()) {
+                sendNotificationToUser(notification.getUserId(), product);
+                userStatus.setNotificationStatus("COMPLETED");
+                saveNotificationHistory(product, notification.getUserId(), "COMPLETED");
+                remainingStock--;
+            } else {
+                userStatus.setNotificationStatus("INACTIVE");
             }
 
-            if (!notification.isActive()) continue;  // 알림 설정이 비활성화된 유저는 넘김
-
-            Long userId = notification.getUserId();
-            sendNotificationToUser(userId, product);
-
-            // 알림 상태 기록
-            saveNotificationHistory(product, userId, "COMPLETED");
-
-            remainingStock--;  // 재고 감소
+            userStatuses.add(userStatus);
         }
 
-        // 응답 DTO 설정
         ProductUserNotificationResponseDTO response = new ProductUserNotificationResponseDTO();
         response.setProductId(product.getProductId());
         response.setReplenishmentCount(product.getReplenishmentCount());
         response.setStatus("COMPLETED");
         response.setMessage("알림이 성공적으로 전송되었습니다.");
+        response.setUserStatuses(userStatuses); // 유저별 상태 추가
 
         return response;
     }
+
     // 히스토리 남기는 메소드
     private void saveNotificationHistory(Product product, Long userId, String status) {
         ProductNotificationHistory history = new ProductNotificationHistory();
