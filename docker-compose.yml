@@ -24,12 +24,12 @@ services:
       - my_network
 
   hanghae_restock:
-    build: ..
+    build: .
     container_name: hanghae_restock
     ports:
       - "8090:8090"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://haengyeo_mysql:3306/restock_db
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/restock_db
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
