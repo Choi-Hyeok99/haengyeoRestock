@@ -26,4 +26,13 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductNotificationHistory> productNotificationHistoryList = new ArrayList<>();
 
+
+    public void decreaseStock() {
+        if (this.stock > 0) {
+            this.stock--;
+            this.isOutOfStock = this.stock == 0; // 품절 여부 업데이트
+        } else {
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
+    }
 }
