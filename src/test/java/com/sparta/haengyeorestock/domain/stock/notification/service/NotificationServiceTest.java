@@ -7,6 +7,7 @@ import com.sparta.haengyeorestock.domain.stock.notification.repository.ProductNo
 import com.sparta.haengyeorestock.domain.stock.notification.repository.ProductUserNotificationRepository;
 import com.sparta.haengyeorestock.domain.stock.product.entitiy.Product;
 import com.sparta.haengyeorestock.domain.stock.product.repository.ProductRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ public class NotificationServiceTest {
         // 테스트용 데이터 준비
         productId = prepareTestData();
     }
+    @AfterEach
+    public void cleanup() {
+        productUserNotificationRepository.deleteAll();
+        productNotificationHistoryRepository.deleteAll();
+        productRepository.deleteAll();
+    }
 
     private Long prepareTestData() {
         // 1. 상품 생성
@@ -52,17 +59,17 @@ public class NotificationServiceTest {
 
         // 2. 500명의 유저 생성 (중복 알림 체크)
         List<ProductUserNotification> notifications = new ArrayList<>();
-        for (int i = 1; i <= 200; i++) {
-            ProductUserNotification notification = new ProductUserNotification();
-            notification.setProduct(product);
-            notification.setUserId((long) i);
-            notification.setIsActive(true);  // 알림 활성화
-
-            // 이미 해당 유저의 알림이 존재하지 않는지 체크 (중복 방지)
+        for (int i = 1; i <= 500; i++) {
+            // 유저의 알림이 이미 존재하는지 확인하여 중복 방지
             if (!productUserNotificationRepository.existsByProductAndUserId(product, (long) i)) {
+                ProductUserNotification notification = new ProductUserNotification();
+                notification.setProduct(product);
+                notification.setUserId((long) i);
+                notification.setIsActive(true);  // 알림 활성화
                 notifications.add(notification);
             }
         }
+        // 중복을 제거한 유저 알림만 삽입
         productUserNotificationRepository.saveAll(notifications);
 
         return product.getProductId();
@@ -77,13 +84,15 @@ public class NotificationServiceTest {
 
         // 결과 확인 (500명 알림 전송)
         List<ProductNotificationHistory> histories = productNotificationHistoryRepository.findAll();
-        assertEquals(200, histories.size(), "500명이 알림을 받아야 합니다.");
+        assertEquals(500, histories.size(), "500명이 알림을 받아야 합니다.");
 
         // 알림 상태 확인
         for (ProductNotificationHistory history : histories) {
-            assertEquals("COMPLETED", history.getStatus(), "알림 상태는 COMPLETED여야 합니다.");
+            // enum의 name() 메서드를 사용하여 알림 상태 비교
+            assertEquals("COMPLETED", history.getStatus().name(), "알림 상태는 COMPLETED여야 합니다.");
         }
     }
+
 
     @Test
     public void testCodePerformance() {

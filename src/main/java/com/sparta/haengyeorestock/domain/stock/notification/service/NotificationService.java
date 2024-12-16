@@ -28,6 +28,7 @@ public class NotificationService {
         Product product = productRepository.findById(productId)
                                            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
 
+        // 재입고 카운트 증가
         product.setReplenishmentCount(product.getReplenishmentCount() + 1);
         productRepository.save(product);
 
@@ -60,6 +61,8 @@ public class NotificationService {
                     userStatus.setNotificationStatus("CANCELED_BY_SOLD_OUT");
                     // 히스토리 저장
                     saveNotificationHistory(product, notification.getUserId(), ProductNotificationHistory.NotificationStatus.CANCELED_BY_SOLD_OUT);
+                    // 알림 중단 (재고가 부족하면 더 이상 알림을 전송하지 않음)
+                    break;
                 }
             } else {
                 userStatus.setNotificationStatus("INACTIVE");
@@ -95,10 +98,6 @@ public class NotificationService {
         productNotificationHistoryRepository.save(history); // DB 저장
     }
 
-    private void sendNotification(Long userId, Long productId) {
-        // 실제 알림 전송 처리 로직
-        System.out.println("알림 전송: 사용자 " + userId + " 에게 상품 " + productId + " 재입고 알림 전송");
-    }
 
     private void sendNotificationToUser(Long userId, Product product) {
         // 실제 알림 전송 로직을 구현합니다. 예시로는 콘솔에 출력하는 코드입니다.
