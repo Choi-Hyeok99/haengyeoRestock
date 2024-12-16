@@ -38,8 +38,9 @@ out/
 
 # Ignore application.yml to prevent sensitive information from being pushed to Git
 /src/main/resources/application.yml
+/src/test/resources/application-test.yml
 # Ignore .env file containing sensitive environment variables
-docker/.env
+.env
 # Ignore Dockerfile if it contains sensitive data or configurations
-docker/Dockerfile
+Dockerfile
 
