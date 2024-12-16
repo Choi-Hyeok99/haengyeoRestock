@@ -1,6 +1,7 @@
 package com.sparta.haengyeorestock.domain.stock.product.entitiy;
 
 import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductNotificationHistory;
+import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductUserNotification;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,10 @@ public class Product {
     // ProductNotificationHistory 관계 매핑
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductNotificationHistory> productNotificationHistoryList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductUserNotification> productUserNotifications = new ArrayList<>();
+
 
     // 품절 여부를 설정하는 메서드 추가
     public void setIsOutOfStock(boolean isOutOfStock) {

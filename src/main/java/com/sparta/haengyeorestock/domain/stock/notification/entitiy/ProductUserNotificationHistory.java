@@ -17,6 +17,8 @@ public class ProductUserNotificationHistory {
 
     private int replenishmentCount; // 재입고 회차
     private LocalDateTime sentAt; // 알림 전송 시간
+    private String status; // 알림 상태 (IN_PROGRESS, COMPLETED, CANCELED_BY_SOLD_OUT, CANCELED_BY_ERROR)
+
 
     // ProductUserNotification과 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)

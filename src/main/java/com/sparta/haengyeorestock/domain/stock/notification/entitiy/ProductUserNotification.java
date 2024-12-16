@@ -30,6 +30,9 @@ public class ProductUserNotification {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String status;  // 상태 (예: 'CANCELED_BY_SOLD_OUT', 'INACTIVE', 'COMPLETED' 등)
+
+
     // ProductUserNotificationHistory와의 관계 설정
     @OneToMany(mappedBy = "productUserNotification", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ProductUserNotificationHistory> productUserNotificationHistoryList = new ArrayList<>();

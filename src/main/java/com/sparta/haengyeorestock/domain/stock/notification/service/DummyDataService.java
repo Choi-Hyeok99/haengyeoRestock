@@ -7,7 +7,6 @@ import com.sparta.haengyeorestock.domain.stock.product.repository.ProductReposit
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -29,15 +28,16 @@ public class DummyDataService {
         productRepository.save(product);
 
         // 2. 유저 알림 설정
-        for (int i = 1; i <= 10; i++) {
+        for (int userId = 1; userId <= 10; userId++) {
             ProductUserNotification notification = new ProductUserNotification();
             notification.setProduct(product);
-            notification.setUserId((long) i);
+            notification.setUserId((long) userId);
             notification.setIsActive(true); // 모든 유저는 알림 활성화
             notification.setCreatedAt(LocalDateTime.now());  // createdAt 설정
             notification.setUpdatedAt(LocalDateTime.now());  // updatedAt 설정
 
             productUserNotificationRepository.save(notification);
         }
+
     }
 }

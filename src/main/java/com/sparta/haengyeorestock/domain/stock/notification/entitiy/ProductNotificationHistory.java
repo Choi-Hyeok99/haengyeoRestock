@@ -20,7 +20,16 @@ public class ProductNotificationHistory {
     @JoinColumn(name = "product_id")
     private Product product; // 상품 정복 ( Product 엔티티와 연결 )
 
-    private String status; // 발송 상태
+    private Long userId;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
     private Long lastSentUser; // 마지막으로 알람 전송 유저 ID
 
+    public enum NotificationStatus {
+        IN_PROGRESS,
+        COMPLETED,
+        CANCELED_BY_SOLD_OUT,
+        CANCELED_BY_ERROR
+    }
 }
