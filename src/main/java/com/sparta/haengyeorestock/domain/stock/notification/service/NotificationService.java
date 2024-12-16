@@ -21,6 +21,7 @@ public class NotificationService {
     private final ProductUserNotificationRepository productUserNotificationRepository;
     private final ProductNotificationHistoryRepository productNotificationHistoryRepository;
     private final ProductRepository productRepository;
+    private final RedisNotificationService redisNotificationService; // RedisNotificationService 의존성 추가
 
     @Transactional
     public ProductUserNotificationResponseDTO sendRestockNotification(Long productId) {
@@ -33,10 +34,10 @@ public class NotificationService {
         List<ProductUserNotification> notifications = productUserNotificationRepository.findAllByProduct(product);
         List<ProductUserNotificationResponseDTO.UserNotificationStatus> userStatuses = new ArrayList<>();
         int remainingStock = product.getStock(); // 현재 재고
+        int batchSize = 500;  // 배치 크기 설정 (500명씩 처리)
         int completedCount = 0; // 성공적으로 알림을 보낸 유저 수
 
-
-        // 알림 전송
+        // 알림 전송 (500명씩 묶어서 처리)
         for (int i = 0; i < notifications.size(); i++) {
             ProductUserNotification notification = notifications.get(i);
 
@@ -46,13 +47,18 @@ public class NotificationService {
             // 알림을 활성화한 유저에게만 알림 전송
             if (notification.isActive()) {
                 if (remainingStock > 0) {
+                    // 재고가 남아있으면 알림 전송
                     product.decreaseStock();  // 재고 차감
                     sendNotificationToUser(notification.getUserId(), product);
                     userStatus.setNotificationStatus("COMPLETED");
+                    // 히스토리 저장
                     saveNotificationHistory(product, notification.getUserId(), ProductNotificationHistory.NotificationStatus.COMPLETED);
                     remainingStock--;  // 재고 차감
-                } else if (remainingStock == 0){
+                    completedCount++;
+                } else {
+                    // 재고가 없으면 상태를 CANCELED_BY_SOLD_OUT으로 설정
                     userStatus.setNotificationStatus("CANCELED_BY_SOLD_OUT");
+                    // 히스토리 저장
                     saveNotificationHistory(product, notification.getUserId(), ProductNotificationHistory.NotificationStatus.CANCELED_BY_SOLD_OUT);
                 }
             } else {
@@ -60,9 +66,12 @@ public class NotificationService {
             }
 
             userStatuses.add(userStatus);
-        }
-        System.out.println("알림을 성공적으로 보낸 유저 수: " + completedCount);
 
+            // 500명씩 처리 완료 후, 큐에 알림 추가 (배치 처리)
+            if ((i + 1) % batchSize == 0 || i == notifications.size() - 1) {
+                redisNotificationService.addNotificationToQueue(productId, notification.getUserId());
+            }
+        }
 
         // 응답 반환
         ProductUserNotificationResponseDTO response = new ProductUserNotificationResponseDTO();
@@ -72,10 +81,11 @@ public class NotificationService {
         response.setMessage("알림이 성공적으로 전송되었습니다.");
         response.setUserStatuses(userStatuses);
 
+        System.out.println("알림을 성공적으로 보낸 유저 수: " + completedCount);
         return response;
     }
 
-
+    // 알림 전송 상태를 저장하는 메서드
     private void saveNotificationHistory(Product product, Long userId, ProductNotificationHistory.NotificationStatus status) {
         ProductNotificationHistory history = new ProductNotificationHistory();
         history.setProduct(product);
@@ -83,11 +93,15 @@ public class NotificationService {
         history.setStatus(status); // 상태 변경
         history.setLastSentUser(userId); // 마지막 발송 유저 설정
         productNotificationHistoryRepository.save(history); // DB 저장
-        System.out.println("Saving Notification History: User " + userId + " Status: " + status);
     }
 
+    private void sendNotification(Long userId, Long productId) {
+        // 실제 알림 전송 처리 로직
+        System.out.println("알림 전송: 사용자 " + userId + " 에게 상품 " + productId + " 재입고 알림 전송");
+    }
 
     private void sendNotificationToUser(Long userId, Product product) {
-        System.out.println("유저 ID: " + userId + ", 상품 ID: " + product.getProductId());
+        // 실제 알림 전송 로직을 구현합니다. 예시로는 콘솔에 출력하는 코드입니다.
+        System.out.println("알림 전송: 사용자 " + userId + " 에게 상품 " + product.getProductId() + " 재입고 알림 전송");
     }
 }

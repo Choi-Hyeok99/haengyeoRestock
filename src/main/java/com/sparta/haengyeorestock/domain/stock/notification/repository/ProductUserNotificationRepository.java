@@ -14,11 +14,13 @@ import java.util.List;
 public interface ProductUserNotificationRepository extends JpaRepository<ProductUserNotification,Long> {
     List<ProductUserNotification> findAllByProduct(Product product);
 
-    // 모든 유저의 상태를 CANCELED_BY_SOLD_OUT으로 업데이트
+    // 상태를 업데이트하는 코드 예시
     @Modifying
     @Transactional
     @Query("UPDATE ProductUserNotification p " +
-            "SET p.status = 'CANCELED_BY_SOLD_OUT' " +
-            "WHERE p.product.productId = :productId")
-    int updateStatusToSoldOut(Long productId);
+            "SET p.status = :status " +
+            "WHERE p.userId = :userId AND p.product.productId = :productId")
+    int updateNotificationStatus(Long userId, Long productId, String status);
+
+    boolean existsByProductAndUserId(Product product, long i);
 }
