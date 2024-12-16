@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0.36
@@ -23,20 +24,35 @@ services:
     networks:
       - my_network
 
+  redis:
+    image: redis:7.4.1
+    container_name: haengyeo_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - my_network
+
   hanghae_restock:
     build: .
     container_name: hanghae_restock
     ports:
       - "8090:8090"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/restock_db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://haengyeo_mysql:3306/restock_db
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_REDIS_HOST: haengyeo_redis  # Redis 컨테이너 호스트
+      SPRING_REDIS_PORT: 6379
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy  # Redis 서비스가 준비되면 애플리케이션 실행
     restart: always
     networks:
       - my_network
