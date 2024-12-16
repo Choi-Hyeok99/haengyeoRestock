@@ -10,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Data
-
 @NoArgsConstructor
 public class Product {
 
@@ -26,7 +25,12 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductNotificationHistory> productNotificationHistoryList = new ArrayList<>();
 
+    // 품절 여부를 설정하는 메서드 추가
+    public void setIsOutOfStock(boolean isOutOfStock) {
+        this.isOutOfStock = isOutOfStock;
+    }
 
+    // 재고 감소 메서드
     public void decreaseStock() {
         if (this.stock > 0) {
             this.stock--;

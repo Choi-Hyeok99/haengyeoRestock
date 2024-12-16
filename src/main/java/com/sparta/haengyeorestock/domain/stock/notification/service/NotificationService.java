@@ -38,16 +38,16 @@ public class NotificationService {
             ProductUserNotificationResponseDTO.UserNotificationStatus userStatus = new ProductUserNotificationResponseDTO.UserNotificationStatus();
             userStatus.setUserId(notification.getUserId());
 
-            if (remainingStock <= 0) { // 재고가 없을 때
-                userStatus.setNotificationStatus("CANCELED_BY_SOLD_OUT");
-                saveNotificationHistory(product, notification.getUserId(), "CANCELED_BY_SOLD_OUT");
-                break;  // 더 이상 알림을 보내지 않도록 종료
-            } else if (notification.isActive()) { // 알림 활성화 상태
+            if (remainingStock > 0 && notification.isActive()) { // 재고가 남아있고 알림 활성화된 유저
+                product.decreaseStock(); // 재고 감소 메서드
                 sendNotificationToUser(notification.getUserId(), product);
                 userStatus.setNotificationStatus("COMPLETED");
                 saveNotificationHistory(product, notification.getUserId(), "COMPLETED");
                 remainingStock--;  // 재고 차감
-            } else { // 알림 비활성화
+            } else if (remainingStock <= 0) { // 재고가 없을 때
+                userStatus.setNotificationStatus("CANCELED_BY_SOLD_OUT");
+                saveNotificationHistory(product, notification.getUserId(), "CANCELED_BY_SOLD_OUT");
+            } else { // 알림 비활성화된 유저
                 userStatus.setNotificationStatus("INACTIVE");
             }
 

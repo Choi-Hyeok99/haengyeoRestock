@@ -30,8 +30,16 @@ public class ProductUserNotification {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-
     // ProductUserNotificationHistory와의 관계 설정
     @OneToMany(mappedBy = "productUserNotification", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ProductUserNotificationHistory> productUserNotificationHistoryList = new ArrayList<>();
+
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
 }

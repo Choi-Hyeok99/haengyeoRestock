@@ -15,8 +15,6 @@ public class ProductUserNotificationHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId; // 알림 이력 ID
 
-    private Long productId; // 상품 ID
-    private Long userId; // 유저 ID
     private int replenishmentCount; // 재입고 회차
     private LocalDateTime sentAt; // 알림 전송 시간
 
