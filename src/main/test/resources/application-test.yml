@@ -15,4 +15,4 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
   h2:
     console:
-      enabled: true
+      enabled: true  # H2 콘솔을 활성화

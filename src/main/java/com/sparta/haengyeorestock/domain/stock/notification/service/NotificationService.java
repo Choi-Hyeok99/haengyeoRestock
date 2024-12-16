@@ -1,5 +1,6 @@
 package com.sparta.haengyeorestock.domain.stock.notification.service;
 
+import com.sparta.haengyeorestock.domain.exception.ProductNotFoundException;
 import com.sparta.haengyeorestock.domain.stock.notification.dto.ProductUserNotificationResponseDTO;
 import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductNotificationHistory;
 import com.sparta.haengyeorestock.domain.stock.notification.entitiy.ProductUserNotification;
@@ -26,7 +27,7 @@ public class NotificationService {
     @Transactional
     public ProductUserNotificationResponseDTO sendRestockNotification(Long productId) {
         Product product = productRepository.findById(productId)
-                                           .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+                                           .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다."));
 
         // 재입고 카운트 증가
         product.setReplenishmentCount(product.getReplenishmentCount() + 1);
